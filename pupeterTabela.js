@@ -1,42 +1,70 @@
-// npm install puppeteer
+   
 const puppeteer = require('puppeteer');
 
+ 
+ 
 (async () => {
     // launch a new browser instance
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
+    const objetoLinks = [];
+ 
+ 
+   
 
-    // open the target table URL
-    await page.goto('http://servicos.guarulhos.sp.gov.br:8080/portalGuarulhos/TesteServico.do?id_servico=880');
+        let maximo = 40;
 
-    // scrape the table data
-    const tableData = await page.evaluate(() => {
-        const rows = document.querySelectorAll('body table tbody tr td table tbody tr td  table tbody tr td table   tbody  tr     ');
 
-        // empty array to collect scraped data
-        const data = new Array()
-
-        // iterate through the rows to collect their data
-        
-        rows.forEach((row) => {
-
-            product = row.querySelector(' td').innerText.trim();
-
+        for (let index = 0; index < 9; index++) {
+           
           
+            
+            
+            
+        }
+
+        for (let index = 0; index <= 39; index++) {
+            
           
-            data.push(product);
-        });
+            
 
-        // return the extracted data
-        return data;
-    });
+            await page.goto(`https://www.guarulhos.sp.gov.br/cartadeservicos?combine=&field_servicos_target_id=All&page=${index}`);
 
-  
-    console.log(tableData[1]);
-    console.log(tableData[2]);
-    
-    
 
-    // close the browser
+            const options = await page.$$eval(' .views-field-title .field-content a', options => {
+                let caminho = options.map(option => option.href);
+                let informacao = options.map(option => option.text);
+
+                objetoInformacoes = {
+                    "links": caminho,
+                    "textos": informacao
+                }
+
+                return objetoInformacoes;
+
+
+
+            });
+
+
+            console.log(options);
+            
+            
+
+
+
+        }
     await browser.close();
-})();
+
+    })();
+    
+
+    //console.log(`o link: ${objetoLinks[0]['links'][0]} corresponde ao texto ${objetoLinks[0]['textos'][0]}`);
+
+
+
+
+
+
+
+ 

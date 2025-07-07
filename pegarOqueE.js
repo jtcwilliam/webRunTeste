@@ -9,6 +9,9 @@ const puppeteer = require('puppeteer');
     // open the target table URL
     await page.goto('http://servicos.guarulhos.sp.gov.br:8080/portalGuarulhos/TesteServico.do?id_servico=25');
 
+ 
+    
+
 
 
     
@@ -24,22 +27,7 @@ const puppeteer = require('puppeteer');
          }));
          
 
-        /*
-         console.log('Legislação');
-         console.log(dataB[0]);
-         console.log(' ');
-         console.log('Documentos Necessários');
-         console.log(dataB[1]);
-         console.log(' ');
-         console.log('taxas');
-         console.log(dataB[2]);
-         console.log(' ');
-         console.log('Informações COmplementares');
-         console.log(dataB[3]);
-     
-         console.log(' ');
-         
-         */
+      
       
          console.log('REquisitos');
          console.log(dataB[5]);

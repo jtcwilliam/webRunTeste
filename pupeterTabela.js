@@ -1,70 +1,88 @@
-   
-const puppeteer = require('puppeteer');
+import puppeteer from "puppeteer";
+import mysql2 from "mysql2";
 
- 
- 
 (async () => {
-    // launch a new browser instance
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    const objetoLinks = [];
- 
- 
-   
+  // launch a new browser instance
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-        let maximo = 40;
+  let maximo = 40;
 
+  for (let index = 0; index <= 1; index++) {
+    await page.goto(
+      `https://www.guarulhos.sp.gov.br/cartadeservicos?combine=&field_servicos_target_id=All&page=${index}`
+    );
 
-        for (let index = 0; index < 9; index++) {
-           
-          
-            
-            
-            
-        }
+    const options = await page.$$eval(
+      " .views-field-title .field-content a",
+      (options) => {
+        let caminho = options.map((option) => option.href);
+        let informacao = options.map((option) => option.text);
 
-        for (let index = 0; index <= 39; index++) {
-            
-          
-            
+        return { caminho, informacao };
+      }
+    );
 
-            await page.goto(`https://www.guarulhos.sp.gov.br/cartadeservicos?combine=&field_servicos_target_id=All&page=${index}`);
+    const secretaria = await page.$$eval(
+      " .views-field-field-servicos .field-content a",
+      (secretaria) => {
+        let nomeSecretaria = secretaria.map((sec) => sec.text);
+        let caminhoSecretaria = secretaria.map((sec) => sec.href);
 
+        return { nomeSecretaria, caminhoSecretaria };
+      }
+    );
 
-            const options = await page.$$eval(' .views-field-title .field-content a', options => {
-                let caminho = options.map(option => option.href);
-                let informacao = options.map(option => option.text);
+    console.log(secretaria["nomeSecretaria"]);
 
-                objetoInformacoes = {
-                    "links": caminho,
-                    "textos": informacao
-                }
+    for (let index = 0; index < options["informacao"].length; index++) {
+      const informacao = options["informacao"][index];
+      const caminho = options["caminho"][index];
 
-                return objetoInformacoes;
+      const nomeSec = secretaria["nomeSecretaria"][index];
+      const caminhoSecretaria = secretaria["caminhoSecretaria"][index];
+      const idSecretaria = caminhoSecretaria.split("/")[5];
 
+      console.log(idSecretaria);
+      
 
+      //  await inserirBanco(caminho, informacao);
+    }
+  }
+  await browser.close();
+})();
 
-            });
+export default async function inserirBanco(caminho, link) {
+  try {
+    const connection = mysql2.createConnection({
+      host: "dbagenddev.mysql.dbaas.com.br",
+      //  user: "u328184393_dev_appraiser",
+      //  database: "u328184393_dev_appraiser",
 
+      password: "Sge@4@5",
+      user: "dbagenddev",
+      database: "dbagenddev",
+    });
 
-            console.log(options);
-            
-            
+    const promissePool = connection.promise();
 
+    //
 
+    try {
+      const sql =
+        "INSERT INTO linkCartaServico (linkCarta,descricaoCarta) VALUES (?, ?)";
+      const [result] = await promissePool.query(sql, [caminho, link]);
 
-        }
-    await browser.close();
+      console.log(`User inserted with ID: ${result.insertId}`);
+      console.log(`Affected rows: ${result.affectedRows}`);
+    } catch (err) {
+      console.error("Error inserting user:", err);
+    } finally {
+      connection.end();
+    }
 
-    })();
-    
-
-    //console.log(`o link: ${objetoLinks[0]['links'][0]} corresponde ao texto ${objetoLinks[0]['textos'][0]}`);
-
-
-
-
-
-
-
- 
+    //
+  } catch (error) {
+    reject(error);
+  }
+}

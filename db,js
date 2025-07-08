@@ -1,0 +1,16 @@
+// db.js
+const mysql = require('mysql2/promise');
+
+async function connect() {
+  const connection = await mysql.createConnection({
+    host: 'dbagenddev.mysql.dbaas.com.br',
+    user: 'Sge@4@5',
+    password: 'dbagenddev',
+    database: 'dbagenddev'
+  });
+  return connection;
+}
+
+module.exports = { connect };
+
+ 

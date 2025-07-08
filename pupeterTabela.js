@@ -8,7 +8,7 @@ import mysql2 from "mysql2";
 
   let maximo = 40;
 
-  for (let index = 0; index <= 1; index++) {
+  for (let index = 0; index <= 40; index++) {
     await page.goto(
       `https://www.guarulhos.sp.gov.br/cartadeservicos?combine=&field_servicos_target_id=All&page=${index}`
     );
@@ -43,16 +43,16 @@ import mysql2 from "mysql2";
       const caminhoSecretaria = secretaria["caminhoSecretaria"][index];
       const idSecretaria = caminhoSecretaria.split("/")[5];
 
-      console.log(idSecretaria);
+      console.log(informacao);
       
 
-      //  await inserirBanco(caminho, informacao);
+      await inserirBanco(caminho, informacao, nomeSec, idSecretaria);
     }
   }
   await browser.close();
 })();
 
-export default async function inserirBanco(caminho, link) {
+export default async function inserirBanco(caminho, link, nomeSecretaria, idSecretaria) {
   try {
     const connection = mysql2.createConnection({
       host: "dbagenddev.mysql.dbaas.com.br",
@@ -70,8 +70,8 @@ export default async function inserirBanco(caminho, link) {
 
     try {
       const sql =
-        "INSERT INTO linkCartaServico (linkCarta,descricaoCarta) VALUES (?, ?)";
-      const [result] = await promissePool.query(sql, [caminho, link]);
+        "INSERT INTO linkCartaServico (linkCarta,descricaoCarta, nomeSecretaria, idSecretaria) VALUES (?, ?,?,?)";
+      const [result] = await promissePool.query(sql, [caminho, link, nomeSecretaria, idSecretaria]);
 
       console.log(`User inserted with ID: ${result.insertId}`);
       console.log(`Affected rows: ${result.affectedRows}`);

@@ -1,0 +1,5 @@
+
+select  concat("[",idlinkCartaServico,   ",'", linkCarta,"','", descricaoCarta,"',", idSecretaria,"],") from linkCartaServico 
+
+
+

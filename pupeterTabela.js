@@ -46,7 +46,7 @@ import mysql2 from "mysql2";
       console.log(informacao);
       
 
-      await inserirBanco(caminho, informacao, nomeSec, idSecretaria);
+       await inserirBanco(caminho, informacao, nomeSec, idSecretaria);
     }
   }
   await browser.close();

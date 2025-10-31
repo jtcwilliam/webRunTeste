@@ -1,3 +1,6 @@
+// eu, tu, 2 bota nela
+
+
 import puppeteer from "puppeteer";
 import { Pool } from "pg";
 let contRes = 1;

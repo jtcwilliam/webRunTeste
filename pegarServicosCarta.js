@@ -1,14 +1,21 @@
 import puppeteer from "puppeteer";
-import mysql2 from "mysql2";
+
+import { Pool } from "pg";
+
+const pool = new Pool({
+  user: "dbagenddevpost",
+  host: "dbagenddevpost.postgresql.dbaas.com.br",
+  database: "dbagenddevpost",
+  password: "Sge@4@5",
+  port: 5432,
+});
 
 (async () => {
   // launch a new browser instance
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  
-
-  for (let index = 0; index <= 40; index++) {
+  for (let index = 0; index <= 1; index++) {
     await page.goto(
       `https://www.guarulhos.sp.gov.br/cartadeservicos?combine=&field_servicos_target_id=All&page=${index}`
     );
@@ -44,7 +51,6 @@ import mysql2 from "mysql2";
       const idSecretaria = caminhoSecretaria.split("/")[5];
 
       //console.log(informacao);
-      
 
       await inserirBanco(caminho, informacao, nomeSec, idSecretaria);
     }
@@ -52,37 +58,33 @@ import mysql2 from "mysql2";
   await browser.close();
 })();
 
-export default async function inserirBanco(caminho, link, nomeSecretaria, idSecretaria) {
+let proximoId = 0;
+
+export default async function inserirBanco(
+  caminho,
+  link,
+  nomeSecretaria,
+  idSecretaria
+) {
+  const client = await pool.connect();
+
   try {
-    const connection = mysql2.createConnection({
-      host: "dbagenddev.mysql.dbaas.com.br",
-      //  user: "u328184393_dev_appraiser",
-      //  database: "u328184393_dev_appraiser",
+    const proximo = client.query(
+      `select nextval('linkcartaservico_idlinkcartaservico_seq')`
+    );
+    proximoId = (await proximo).rows;
 
-      password: "Sge@4@5",
-      user: "dbagenddev",
-      database: "dbagenddev",
-    });
+    //console.log(proximoId[0].nextval);
 
-    const promissePool = connection.promise();
+    for (const element of proximoId) {
+      console.log(element.nextval);
 
-    //
-
-    try {
-      const sql =
-        "INSERT INTO linkCartaServico (linkCarta,descricaoCarta, nomeSecretaria, idSecretaria) VALUES (?, ?,?,?)";
-      const [result] = await promissePool.query(sql, [caminho, link, nomeSecretaria, idSecretaria]);
-
-      console.log(`User inserted with ID: ${result.insertId}`);
-      console.log(`Affected rows: ${result.affectedRows}`);
-    } catch (err) {
-      console.error("Error inserting user:", err);
-    } finally {
-      connection.end();
+      const res = await client.query(
+        `INSERT INTO linkCartaServico (idlinkcartaservico, linkCarta,descricaoCarta, nomeSecretaria, idSecretaria) VALUES ( '${element.nextval}' ,'${caminho}','${link}','${nomeSecretaria}','${idSecretaria}')`
+      );
     }
-
-    //
-  } catch (error) {
-    reject(error);
+  } finally {
+    client.release(); // Release the client back to the pool
+    return false;
   }
 }

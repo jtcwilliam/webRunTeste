@@ -14,7 +14,7 @@ const pool = new Pool({
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  for (let index = 0; index <= 1; index++) {
+  for (let index = 0; index <= 41; index++) {
     await page.goto(
       `https://www.guarulhos.sp.gov.br/cartadeservicos?combine=&field_servicos_target_id=All&page=${index}`
     );
@@ -55,7 +55,7 @@ const pool = new Pool({
       const result = await inserirBanco(
         caminho,
         informacao,
-        nomeSec,
+
         idSecretaria
       );
     }
@@ -65,19 +65,20 @@ const pool = new Pool({
 
 export async function inserirBanco(
   caminho,
-  link,
-  nomeSecretaria,
+  informacao,
+
   idSecretaria
 ) {
   const client = await pool.connect();
 
   try {
     const res = await client.query(
-      `INSERT INTO linkCartaServico (idlinkcartaservico, linkCarta,descricaoCarta, nomeSecretaria, idSecretaria) VALUES ( '${contRes}', '${caminho}','${link}','${nomeSecretaria}','${idSecretaria}')`
+      `INSERT INTO nome_carta_servico (nome_servico,link_nome_servico, id_secretaria) 
+      VALUES ('${informacao}','${caminho}','${idSecretaria}')`
     );
 
-    montarCarta(contRes, caminho, link, idSecretaria);
-    contRes++;
+ //   montarCarta(contRes, caminho, link, idSecretaria);
+ //   contRes++;
   } finally {
     client.release(); // Release the client back to the pool
     return false;

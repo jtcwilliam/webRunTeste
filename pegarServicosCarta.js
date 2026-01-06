@@ -50,7 +50,7 @@ const pool = new Pool({
       const caminhoSecretaria = secretaria["caminhoSecretaria"][index];
       const idSecretaria = caminhoSecretaria.split("/")[5];
 
-      //console.log(informacao);
+      console.log(informacao);
 
       await inserirBanco(caminho, informacao, nomeSec, idSecretaria);
     }

@@ -19,19 +19,16 @@ const pool = new Pool({
   await page.waitForNetworkIdle();
 
   let linksCarta = [
-    [
-      2309,
-      " https://www.guarulhos.sp.gov.br/cartadeservicos/saude/diagnostico-de-doencas-de-notificacao-compulsoria-dnc-tuberculose-latente",
-      "DIAGNÓSTICO DE DOENÇAS DE NOTIFICAÇÃO COMPULSÓRIA (DNC) – TUBERCULOSE LATENTE – IGRA (INTERFERON GAMMA)",
-      205,
-    ],
-    [
-      2310,
-      " https://www.guarulhos.sp.gov.br/cartadeservicos/verde-clima-e-sustentabilidade-meio-ambiente/licenca-ambiental-previa-e-de-0",
-      "Licença Ambiental Prévia e de Instalação - LP LI para empresas em fase de implantação sem CNPJ",
-      307,
-    ],
+
+    [2710, ' https://www.guarulhos.sp.gov.br/cartadeservicos/saude/liberacao-de-obitos ', ' 205']
   ];
+
+
+
+
+
+
+
 
   for await (linksCarta of linksCarta) {
     await page.goto(linksCarta[1]);
@@ -41,15 +38,20 @@ const pool = new Pool({
       (element) => element.innerHTML
     );
 
+
+
+
     //"INSERT INTO cartaServico (idLinkCarta, descricaoCarta,idSecretaria ,textoCartaServico, versaoCartaServico) VALUES (?, ?,?,?,?)";
     await inserirCartaCompleta(
       linksCarta[0],
       linksCarta[2],
-      linksCarta[3],
       text,
       "Versao 1 - 2025"
     );
   }
+
+
+
 
   await browser.close();
 })();
@@ -57,7 +59,6 @@ const pool = new Pool({
 export default async function inserirCartaCompleta(
   //idLinkCarta, descricaoCarta,idSecretaria ,textoCartaServico, versaoCartaServico
   idLinkCarta,
-  descricaoCarta,
   idSecretaria,
   textoCartaServico,
   versaoCartaServico
@@ -66,13 +67,12 @@ export default async function inserirCartaCompleta(
 
   try {
     const sql =
-      "INSERT INTO cartaServico (idLinkCarta, descricaoCarta,idSecretaria ,textoCartaServico, versaoCartaServico) VALUES ($1,$2,$3,$4,$5 )";
+      "INSERT INTO carta_servico (id_nome_carta_servico,id_secretaria ,texto_carta_servico, versao_carta_servico) VALUES ($1,$2,$3,$4 )";
     const res = await client.query(sql, [
       idLinkCarta,
-      descricaoCarta,
       idSecretaria,
       textoCartaServico,
-      versaoCartaServico,
+      versaoCartaServico
     ]);
     console.log(sql);
   } finally {
